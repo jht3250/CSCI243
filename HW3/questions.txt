@@ -1,0 +1,278 @@
+Homework 3: Basic Debugging with GDB
+
+Name: <<< John Treon >>> //2 pts.
+
+Instructions
+------------
+
+These questions deal with the simple symbol table program found in
+the file "sym.c".  Compile it with the options "-Wall -ggdb -std=c99"
+for testing.
+
+Some questions ask you to compare information printed by gdb with the
+contents of the data files being processed.  You may find it helpful to
+have a second shell window open; run gdb in the first window, and execute
+other commands (such as 'more', or an editor) in the second window. Place
+your answers between the lines provided for each question.
+
+Questions
+---------
+
+1. Run 'sym', redirecting the standard input from the file named 'data1'.
+Compare the output from the program to the contents of the file 'data1'.
+Does the program appear to be operating correctly?  Explain why or why
+not.
+3 points.
+******************** Your answer below ********************
+Yes, the program is working properly. It is using the words
+as symbols and has the proper associated value. 
+***********************************************************
+
+2. Run 'sym' again, this time redirecting the standard input from the
+file named 'data2'.  What happens?
+3 points.
+******************** Your answer below ********************
+The program segfaults.
+***********************************************************
+
+3. Run gdb on the program with the command "gdb sym".  At the "(gdb)"
+prompt, enter the gdb command "run < data2" to run 'sym' with input
+redirected from the 'data2' file.  What line of code is being executed
+when the program generated a segmentation fault?
+3 points.
+******************** Your answer below ********************
+add_to_table(name=0x7ffffae08ce0 "whinny", value=-1711)
+at sym.c:65
+***********************************************************
+
+4. Use the gdb 'where' command to print a trace of function calls.
+
+   a. What were the actual parameters that were given to add_to_table()?
+3 points.
+******************** Your answer below ********************
+"whinny", -1711
+***********************************************************
+
+   b. From what line in main() was the function called?
+3 points.
+******************** Your answer below ********************
+65
+***********************************************************
+
+5. Use the gdb 'print' command to print some program variables.
+
+   a. Print the 'index' variable with the command 'print index'.  What is
+   its value?
+3 points.
+******************** Your answer below ********************
+336
+***********************************************************
+
+   b. Try to print the table entry being modified,'table[index]'.  What
+   happens?
+3 points.
+******************** Your answer below ********************
+The memory address is not allowed to be accessed.
+***********************************************************
+
+   c. Look at the definition of the variable 'table' in the file 'sym.c'.
+   How many symbols is the array designed to hold?
+3 points.
+******************** Your answer below ********************
+5
+***********************************************************
+
+   d. Print the global variable 'table' itself.  How many symbols are
+   stored in the table?
+3 points.
+******************** Your answer below ********************
+5
+***********************************************************
+
+6. Use the gdb 'continue' command to terminate the process in which 'sym'
+is running.  Next, type "watch index" to set a watchpoint on the global
+variable 'index'.  (Watchpoints cause gdb to pause the execution of the
+program whenever the variable being watched is changed.)  Re-run 'sym'
+with the gdb command "run < data2".
+
+   a.  What happens?
+3 points.
+******************** Your answer below ********************
+The program terminates with signal SIGSEGV, segfaulting. Once
+the program is rerun, value goes from 0 (initialized) to 1. 
+***********************************************************
+
+   b.  What value is now in the variable 'index'?
+3 points.
+******************** Your answer below ********************
+1
+***********************************************************
+
+   c.  Use the 'continue' command to resume the execution of 'sym'.
+   What value is in 'index' now?
+3 points.
+******************** Your answer below ********************
+2
+***********************************************************
+
+7.  Use the 'continue' command five more times, then answer this question.
+
+   a.  What actual parameters were given to the add_to_table() function
+   this time?
+3 points.
+******************** Your answer below ********************
+"evident", 4190
+***********************************************************
+
+   b.  Into which element of 'table' was this data stored?
+5 points.
+******************** Your answer below ********************
+6
+***********************************************************
+
+   c.  Print the contents of 'table'.  How many items are stored there?
+3 points.
+******************** Your answer below ********************
+5
+***********************************************************
+
+   d.  Execute the gdb command "print table[5]" and then "print table[6]".
+   What is printed?
+3 points.
+******************** Your answer below ********************
+print table[5] prints:
+S2 = {name = "dopes\000\000", value = 2859}
+print table[6] prints:
+S3 = {name = "evident", value = 4190}
+***********************************************************
+
+   e.  Explain the difference between your answer to (c) and (d) above.
+   Where is the data that was displayed in part (d) stored in memory?
+5 points.
+******************** Your answer below ********************
+The data displayed in part D is being stored in the next two
+memory addresses after table[5], however, table only encompasses
+the addresses of table[0] through table[4] since the array was
+initialized as a size of 5. This results in only table[0] through
+table[4] being printed when using print table.
+***********************************************************
+
+8. Exit from gdb by entering the 'quit' command; if you are asked the
+question "Quit anyway?", enter 'y'.  Run gdb on 'sym' again, this time
+redirecting the standard input from the file named 'data3'.  Does the
+output of the program match the data that was read in?  If not, what
+is different?
+5 points.
+******************** Your answer below ********************
+No. The symbol 'September' has a completely different value,
+and both 'November' and 'December' have their values set to 0.
+***********************************************************
+
+9. At the "(gdb)" prompt, enter the command "break add_to_table"
+to set a breakpoint at the beginning of the add_to_table() function.
+(Breakpoints, like watchpoints, cause gdb to pause the execution of the
+program, but this time whenever the specified function is called during
+execution.) Re-run the program with the gdb command "run"; gdb will
+remember that you redirected the standard input to come from 'data3',
+and will automatically do that again.  What actual parameters were given
+to add_to_table() when it was called?
+3 points.
+******************** Your answer below ********************
+"August", 31
+***********************************************************
+
+10. Use the gdb 'continue' command again.
+
+   a. Print the global 'table' variable.  What symbol(s) have been stored
+   in the table?
+3 points.
+******************** Your answer below ********************
+Table[0] is "August\000", 31. With the rest of the table
+still at default intitialization.
+***********************************************************
+   
+   b. What symbol is being stored in the table this time, and what 
+   integer value is being stored with it?
+3 points.
+******************** Your answer below ********************
+"September", 30
+***********************************************************
+   
+11. Use the gdb 'continue' command again.  Print the contents of the
+second entry in the table with the command "print table[1]".  What data
+was placed in that table entry, and how does it compare to the data that
+was given to add_to_table() in the previous call?
+3 points.
+******************** Your answer below ********************
+The symbol is "Septembe", and the value is 114, which is not
+correct.
+***********************************************************
+    
+12. Use the gdb 'continue' command again; you should see a call to
+add_to_table("November",30).  Enter the gdb 'list' command to display the
+next 10 lines of the program that will be executed.  What value is
+currently in the variable 'index'?
+3 points.
+******************** Your answer below ********************
+3
+***********************************************************
+
+13. Use the gdb 'step' command to execute one C statement.  Print the
+contents of 'table[index]'.  What has been placed in the current table
+entry?
+3 points.
+******************** Your answer below ********************
+a name symbol has not been entered, but the value is set to 30.
+***********************************************************
+
+14. Use the gdb 'step' three more times.  Print 'table[index]'.  What has
+now been placed in the table entry?
+3 points.
+******************** Your answer below ********************
+The name is set to "N\000\000\000\000\000\000", and the value
+is set to 30.
+***********************************************************
+
+15. Use the gdb command 'step 14', which executes 14 C statements
+(instead of just one).  Print 'table[index]'.  What data is currently
+held in this entry in the table (both values)?
+3 points.
+******************** Your answer below ********************
+"November", 30
+***********************************************************
+
+16. Use the gdb command 'step' to execute one C statement.
+
+   a.  What value is now in 'index'?
+3 points.
+******************** Your answer below ********************
+3
+***********************************************************
+
+   b.  Print 'table[index]' to print the completed table entry.
+   What is now held in that table entry (both values)?
+3 points.
+******************** Your answer below ********************
+"November", 0
+***********************************************************
+
+17. Look at the definition of the 'symbol' structure in 'sym.c'.  Given
+that definition, and what your observation of the copying of data into
+the current table entry, explain why the results from executing the
+command "sym < data3" do not match the expected results.
+10 points.        
+******************** Your answer below ********************
+The maximum size of a name is 8 characters. When the name is 
+being written to the name variable, the last character, r, is being
+overflowed into the next memory location, where the value is supposed
+to be stored. Since the character is r, which is represented by the 
+value of 114, the value is presenting as "114" instead of "30". For 
+November and December, having their values set to 0, this is because 
+strings are null terminated. When the names "November" and "December"
+which have exactly 8 characters are added to table[index].name, the 
+final character at position 8 of the string is set to \000. Position 8
+however is outside of the memory addresses reserved for the name string, 
+and instead refers to the address housing the value of the symbol. Since
+the null character needs to be used to terminate the string, it replaces
+the value of 30 for November, and 31 for December.
+***********************************************************
