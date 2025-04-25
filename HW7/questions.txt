@@ -1,0 +1,11 @@
+1. Which sort was faster?
+Non-threaded quick sort.
+
+2. Was it what you expected?
+No, I expected threaded to be faster.
+
+3. Which one did you expect to be faster and why?
+I expected threaded to be faster, because in concept splitting up work to do in parallel should be always faster. 
+
+4. What could have effected the results?
+The fact that the threads need to wait on the prior thread to conclude before starting I believe is what negatively contributed to the runtime. When the program runs normally using recursion on a single core, each recursive call ends on the next starting instantly, and when the deepest one concludes, they all complete in a line, assembling the final sorted array. Especially for quick sort, the left side of the original pivot will finish sorting first, and the right side will start sorting immediately after, resulting in essentially each element being taken care of in the order of where it should lie in the final sorted array.
